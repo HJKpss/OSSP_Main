@@ -233,9 +233,9 @@ void file(lank s){
 	strcpy(b[5].name, s.name);
 	strcpy(b[5].k, s.k);
 	bub(b);
-	for (int i = 0; i < 6; i++) {
-		printf("%d %s %s\n", b[i].score, b[i].name, b[i].k);
-	}	
+	//for (int i = 0; i < 6; i++) {
+	//	printf("%d %s %s\n", b[i].score, b[i].name, b[i].k);
+	//}	
 	file2(b);
 }
 
@@ -665,7 +665,16 @@ int main()
 		}
 	}
 	else if (POS == 1) {//랭킹
-
+		lank c[5];
+		FILE* fp = fopen("Lank.txt", "r");
+		for (int i = 0; i < 5; i++) {
+			fscanf(fp, "%d %s %s\n", &c[i].score, c[i].name, c[i].k);
+		}
+		fclose(fp);
+		printf("\n");
+		for (int i = 0; i < 5; i++) {
+			printf("%d등 %d %s %s\n", i+1, c[i].score, c[i].name, c[i].k);
+		}
 	}
 	else puts("게임종료를 눌렀습니다.");//게임종료
 
