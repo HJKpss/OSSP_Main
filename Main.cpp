@@ -46,27 +46,27 @@ void DrawDino(int dinoY)
 {
 	GotoXY(0, dinoY);
 	static bool legFlag = true;
-	printf("                       $$$$$$$ \n");
-	printf("                      $$ $$$$$$\n");
-	printf("                      $$$$$$$$$\n");
-	printf("               $      $$$      \n");
-	printf("               $$     $$$$$$$  \n");
-	printf("               $$$   $$$$$     \n");
-	printf("                $$  $$$$$$$$$$ \n");
-	printf("                $$$$$$$$$$$    \n");
-	printf("                 $$$$$$$$$$    \n");
-	printf("                   $$$$$$$$    \n");
-	printf("                    $$$$$$     \n");
+	printf("        $$$$$$$ \n");
+	printf("       $$ $$$$$$\n");
+	printf("       $$$$$$$$$\n");
+	printf("$      $$$      \n");
+	printf("$$     $$$$$$$  \n");
+	printf("$$$   $$$$$     \n");
+	printf(" $$  $$$$$$$$$$ \n");
+	printf(" $$$$$$$$$$$    \n");
+	printf("  $$$$$$$$$$    \n");
+	printf("    $$$$$$$$    \n");
+	printf("     $$$$$$     \n");
 	if (legFlag)
 	{
-		printf("                   $    $$$    \n");
-		printf("                   $$$           ");
+		printf("     $    $$$    \n");
+		printf("     $$          ");
 		legFlag = false;
 	}
 	else
 	{
-		printf("                     $$$ $     \n");
-		printf("                         $$$     ");
+		printf("     $$$  $     \n");
+		printf("          $$    ");
 		legFlag = true;
 	}
 }
@@ -137,7 +137,8 @@ bool isCollision(const int treeX, const int dinoY)
 	//공룡의 높이가 충분하지 않다면 충돌로 처리
 	GotoXY(0, 0);
 	printf("treeX : %d, dinoY : %d", treeX, dinoY); //이런식으로 적절한 X, Y를 찾습니다.
-	if (10 <= treeX && treeX <= 14 && dinoY > 8)
+	if (treeX <= 8 && treeX >= 4 &&
+		dinoY > 8)
 	{
 		return true;
 	}
@@ -256,7 +257,7 @@ void start() {
 			printf(" ================================================================================================================== \n");
 			printf("\n");
 		}
-		Sleep(1000);
+		Sleep(500);
 	}
 }
 
@@ -312,7 +313,6 @@ int main()
 			//게임 시작시 초기화
 			bool isJumping = false;
 			bool isBottom = true;
-			bool isDown = false;
 			const int gravity = 3;
 
 			int dinoY = DINO_BOTTOM_Y;
@@ -329,7 +329,7 @@ int main()
 					break;
 
 				//z키가 눌렸고, 바닥이 아닐때 점프
-				if (GetKeyDown() == 'w' && isBottom)
+				if (GetKeyDown() == 'z' && isBottom)
 				{
 					isJumping = true;
 					isBottom = false;
@@ -365,12 +365,9 @@ int main()
 				{
 					isJumping = false;
 				}
-				if (GetKeyDown() == 's') {
-					DownDrawDino(dinoY);
-				}
-				else DrawDino(dinoY);		//draw dino
-				DrawTree(treeX);		//draw Tree
 
+				DrawDino(dinoY);		//draw dino
+				DrawTree(treeX);		//draw Tree
 
 				//(v2.0)
 				curr = clock();			//현재시간 받아오기
