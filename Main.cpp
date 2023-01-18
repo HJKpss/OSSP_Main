@@ -3,6 +3,7 @@
 #include<windows.h>
 #include<conio.h>
 #include<time.h>
+#include<string.h>
 #define DINO_BOTTOM_Y 12
 #define DINO_BOTTOM_HY 0
 #define TREE_BOTTOM_Y 20
@@ -183,12 +184,72 @@ void RE_DrawTree(int treeX)
 	GotoXY(treeX, RE_TREE_BOTTOM_HY + 13);
 	printf("$$$$");
 }
+struct  lank {
+	int score;
+	char name[128];
+	int cpos;
+	char k[128];
+};
+void sort(lank* a, lank* b) {
+	lank c = *a;
+	*a = *b;
+	*b = c;
+}
 
+void bub(lank *b) {
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 3; j++) {
+			if (b[j].score < b[j + 1].score) {
+				sort(&b[j], &b[j + 1]);
+			}
+		}
+	}
+}
+
+void file(lank s){
+	if (s.cpos == 1) strcpy(s.k, "디노");
+	else strcpy(s.k, "토끼");
+
+	lank a[3];
+	lank b[4];
+	FILE* fp = fopen("Lank.txt", "r");
+	for (int i = 0; i < 3; i++) {
+		fscanf(fp, "%d %s %s\n", &a[i].score, a[i].name, a[i].k);
+	}
+	fclose(fp);
+	for (int i = 0; i < 3; i++) {
+		b[i].score = a[i].score;
+		strcpy(b[i].name ,a[i].name);
+		strcpy(b[i].k, a[i].k);
+	}
+	b[3].score = s.score;
+	strcpy(b[3].name, s.name);
+	strcpy(b[3].k, s.k);
+	bub(b);
+	for (int i = 0; i < 4; i++) {
+		printf("%d %s %s\n", b[i].score, b[i].name, b[i].k);
+	}
+	
+
+	//FILE* fp = fopen("Lank.txt", "w");
+	//if (s.cpos == 1) {
+	//	fprintf(fp, "점수: %d 닉네임: %s 캐릭터: 디노", s.score, s.name);
+	//}
+	//else{
+	//	fprintf(fp, "점수: %d 닉네임: %s 캐릭터: 토끼", s.score, s.name);
+	//}
+	//fclose(fp);
+}
 
 //(v2.0) 충돌 했을때 게임오버 그려줌
-void DrawGameOver(const int score)
+void DrawGameOver(const int score, char s[], int n)
 {
 	system("cls");
+	struct lank LL;
+	LL.score = score;
+	strcpy(LL.name, s);
+	LL.cpos = n;
+	file(LL);
 	int x = 60;
 	int y = 8;
 	printf("\n\n");
@@ -282,11 +343,15 @@ void SetConsoleView1()
 	gotoxy(75, 13); printf("3. 게임종료");
 	printf("\n\n\n");
 }
-int sel(int *cpos) {
+int sel(char s[], int* cpos) {
 	cls;
+	char name[128];
 	int n;
-	printf("캐릭터를 선택하세요 (1->디노, 2->토끼) >> ");
+	printf("닉네임을 입력하세요.>> ");
+	scanf("%s", name);
+	printf("캐릭터를 선택하세요. (1->디노, 2->토끼) >> ");
 	scanf("%d", &n);
+	strcpy(s, name);
 	*cpos = n;
 	if (n == 1) {
 		printf("캐릭터:디노\n");
@@ -369,6 +434,7 @@ void start() {
 
 int main()
 {
+	char name[128];
 	int cpos=1; // 캐릭터 선택
 	int POS = 0;	//0 - 게임시작, 1 - 랭킹, 2 - 게임 종료
 	SetConsoleView1();
@@ -413,7 +479,8 @@ int main()
 	if (POS == 0) {//구글디노
 		while (true)		//(v2.0) 게임 루프
 		{
-			sel(&cpos);
+			sel(name, &cpos);
+
 			//start();//게임시작대기
 
 			//게임 시작시 초기화
@@ -515,7 +582,7 @@ int main()
 				}
 
 				//(v2.0) 게임 오버 메뉴
-				DrawGameOver(score);
+				DrawGameOver(score, name, cpos);
 			}
 			else {
 				while (true)	//한 판에 대한 루프
@@ -595,7 +662,7 @@ int main()
 				}
 
 				//(v2.0) 게임 오버 메뉴
-				DrawGameOver(score);
+				DrawGameOver(score, name, cpos);
 			}
 		}
 	}
