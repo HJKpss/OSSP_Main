@@ -1,36 +1,27 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
+#define DINO_BOTTOM_Y 12
+#define DINO_BOTTOM_HY 0
+#define TREE_BOTTOM_Y 20
+#define TREE_BOTTOM_X 45
+#define RE_TREE_BOTTOM_HY 1
+#define RE_TREE_BOTTOM_X 90
+#define RABBIT_BOTTOM_Y 12
+#define pause system("pause > nul")    //그냥 내가 많이 쓰는 커맨드를 줄여준 것이다.
+#define cls system("cls")    //이것 또한
+
 #include<stdio.h>
 #include<windows.h>
 #include<conio.h>
 #include<time.h>
 #include<string.h>
-#define DINO_BOTTOM_Y 12
-#define DINO_BOTTOM_HY 0
-#define TREE_BOTTOM_Y 20
-#define TREE_BOTTOM_X 45
-
-#define RE_TREE_BOTTOM_HY 1
-#define RE_TREE_BOTTOM_X 90
-
-#define RABBIT_BOTTOM_Y 12
-
 #include <stralign.h>
 #include <stdlib.h>
-#define pause system("pause > nul")    //그냥 내가 많이 쓰는 커맨드를 줄여준 것이다.
-#define cls system("cls")    //이것 또한
+
 void SetColor(int color);
 void CursorView(char show);
 void gotoxy(int x, int y);
 
-//콘솔 창의 크기와 제목을 지정하는 함수
-void SetConsoleView()
-{
-	system("mode con:cols=100 lines=25");
-	system("title Google Dinosaurs. By BlockDMask.");
-}
-
-//커서의 위치를 x, y로 이동하는 함수
-void GotoXY(int x, int y)
+void GotoXY(int x, int y) //커서의 위치를 x, y로 이동하는 함수
 {
 	COORD Pos;
 	Pos.X = 2 * x;
@@ -38,8 +29,7 @@ void GotoXY(int x, int y)
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
 }
 
-//키보드의 입력을 받고, 입력된 키의 값을 반환하는 함수
-int GetKeyDown()
+int GetKeyDown() //키보드의 입력을 받고, 입력된 키의 값을 반환하는 함수
 {
 	if (_kbhit() != 0)
 	{
@@ -48,8 +38,7 @@ int GetKeyDown()
 	return 0;
 }
 
-//공룡을 그리는 함수
-void DrawDino(int dinoY)
+void DrawDino(int dinoY) //디노를 그리는 함수
 {
 	GotoXY(0, dinoY);
 	static bool legFlag = true;
@@ -78,9 +67,9 @@ void DrawDino(int dinoY)
 	}
 }
 
-void DownDrawDino(int dinoY) { //s키를 눌렀을때
+void DownDrawDino(int dinoY) {          //s키를 눌렀을때
 	GotoXY(0, dinoY);
-	static bool legFlag = true;//높이 7
+	static bool legFlag = true;
 	printf("                       \n");
 	printf("                       \n");
 	printf("                       \n");
@@ -106,8 +95,7 @@ void DownDrawDino(int dinoY) { //s키를 눌렀을때
 	}
 }
 
-//토끼를 그리는 함수
-void DrawRabbit(int rabbitY)
+void DrawRabbit(int rabbitY) //토끼를 그리는 함수
 {
 	GotoXY(0, rabbitY);
 	static bool legFlag = true;
@@ -121,8 +109,6 @@ void DrawRabbit(int rabbitY)
 	printf("$ $$$$$$$$$$$\n");
 	printf(" $$$$$$$$$ $$\n");
 	printf(" $$$$$$$$$$$$\n");
-	//printf("  $$   $$    \n");
-	//printf("   $$$  $$   \n");
 	if (legFlag)
 	{
 	printf("  $$   $$    \n");
@@ -137,8 +123,7 @@ void DrawRabbit(int rabbitY)
 	}
 }
 
-//나무를 그리는 함수
-void DrawTree(int treeX)
+void DrawTree(int treeX) //나무를 그리는 함수
 {
 	GotoXY(treeX, TREE_BOTTOM_Y);
 	printf("$$$$");
@@ -152,8 +137,7 @@ void DrawTree(int treeX)
 	printf(" $$ ");
 }
 
-//나무를 그리는 함수
-void RE_DrawTree(int treeX)
+void RE_DrawTree(int treeX) //거꾸로된 나무를 그리는 함수
 {
 	GotoXY(treeX, RE_TREE_BOTTOM_HY);
 	printf(" $$ ");
@@ -184,19 +168,21 @@ void RE_DrawTree(int treeX)
 	GotoXY(treeX, RE_TREE_BOTTOM_HY + 13);
 	printf("$$$$");
 }
-struct  lank {
+
+struct  lank {                            //파일저장용 구조체
 	int score;
 	char name[128];
 	int cpos;
 	char k[128];
 };
-void sort(lank* a, lank* b) {
+
+void sort(lank* a, lank* b) {            //정렬1
 	lank c = *a;
 	*a = *b;
 	*b = c;
 }
 
-void bub(lank *b) {
+void bub(lank *b) {                      //정렬2
 	for (int i = 0; i < 6; i++) {
 		for (int j = 0; j < 5; j++) {
 			if (b[j].score < b[j + 1].score) {
@@ -205,7 +191,7 @@ void bub(lank *b) {
 		}
 	}
 }
-void file2(lank *b) {
+void file2(lank *b) {                    //파일저장
 	FILE* fp = fopen("Lank.txt", "w");
 		for (int i = 0; i < 5; i++) {
 		fprintf(fp, "%d %s %s\n", b[i].score, b[i].name, b[i].k);
@@ -213,10 +199,9 @@ void file2(lank *b) {
 	fclose(fp);
 }
 
-void file(lank s){
+void file(lank s){                       //파일쓰기
 	if (s.cpos == 1) strcpy(s.k, "디노");
 	else strcpy(s.k, "토끼");
-
 	lank a[5];
 	lank b[6];
 	FILE* fp = fopen("Lank.txt", "r");
@@ -232,10 +217,7 @@ void file(lank s){
 	b[5].score = s.score;
 	strcpy(b[5].name, s.name);
 	strcpy(b[5].k, s.k);
-	bub(b);
-	//for (int i = 0; i < 6; i++) {
-	//	printf("%d %s %s\n", b[i].score, b[i].name, b[i].k);
-	//}	
+	bub(b);	
 	file2(b);
 }
 
@@ -271,7 +253,7 @@ bool isCollision(const int treeX,const int RE_treeX, const int dinoY, const int 
 	{
 		return true;
 	}
-	if (RE_treeX <= 8 && RE_treeX >= 4 &&
+	if (RE_treeX <= 8 && RE_treeX >= 4 && //거꾸로된 나무 충돌 판정
 		dinoHY < 5)
 	{
 		return true;
@@ -279,7 +261,7 @@ bool isCollision(const int treeX,const int RE_treeX, const int dinoY, const int 
 	return false;
 }
 
-bool isCollision1(const int treeX, const int rabbitY)
+bool isCollision1(const int treeX, const int rabbitY) //토끼용 충돌판정
 {
 	//트리의 X가 공룡의 몸체쪽에 있을때,
 	//공룡의 높이가 충분하지 않다면 충돌로 처리
@@ -293,7 +275,6 @@ bool isCollision1(const int treeX, const int rabbitY)
 	return false;
 }
 
-//수정
 void SetColor(int color)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
@@ -318,7 +299,7 @@ void gotoxy(int x, int y) {
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
 }
 
-void SetConsoleView1()
+void SetConsoleView() //새로 제작한 선택창
 {
 	CursorView(0);    //커서의 깜빡임을 숨겨준다.
 	system("COLOR 0F");    //화면 배경을 검정, 글씨 색깔을 하얀색으로 설정해 준다.
@@ -341,7 +322,7 @@ void SetConsoleView1()
 	gotoxy(75, 13); printf("3. 게임종료");
 	printf("\n\n\n");
 }
-int sel(char s[], int* cpos) {
+int sel(char s[], int* cpos) { //닉네임 입력 및 캐릭터 선택
 	cls;
 	char name[128];
 	int n;
@@ -361,7 +342,7 @@ int sel(char s[], int* cpos) {
 	}
 }
 
-void start() {
+void start() { //시작 대기
 	for (int n = 3; n >= 0; --n) {
 		cls;
 		if (n == 0) {
@@ -424,7 +405,7 @@ void start() {
 			printf(" ================================================================================================================== \n");
 			printf("\n");
 		}
-		Sleep(500);
+		Sleep(750);
 	}
 }
 
@@ -432,11 +413,11 @@ void start() {
 
 int main()
 {
-	char name[128];
-	int cpos=1; // 캐릭터 선택
+	char name[128]; //닉네임
+	int cpos=1;     // 캐릭터 선택
 	int POS = 0;	//0 - 게임시작, 1 - 랭킹, 2 - 게임 종료
-	SetConsoleView1();
-	while (true) {
+	SetConsoleView(); //선택창
+	while (true) {    //선택
 		if (GetAsyncKeyState(VK_LEFT))
 			if (POS == 0) POS = 2;
 			else POS -= 1;
@@ -473,13 +454,11 @@ int main()
 	}
 	cls;
 
-	
-	if (POS == 0) {//구글디노
-		while (true)		//(v2.0) 게임 루프
+	if (POS == 0) {           //디노선택
+		while (true)		  //(v2.0) 게임 루프
 		{
-			sel(name, &cpos);
-
-			//start();//게임시작대기
+			sel(name, &cpos); //닉네임, 캐릭 선택
+			start();          //시작대기
 
 			//게임 시작시 초기화
 			bool isJumping = false;
@@ -496,31 +475,26 @@ int main()
 			clock_t start, curr;	//점수 변수 초기화
 			start = clock();		//시작시간 초기화
 			if (cpos == 1) {
-				while (true)	//한 판에 대한 루프
+				while (true)	    //한 판에 대한 루프
 				{
 					//(v2.0) 충돌체크 트리의 x값과 공룡의 y값으로 판단
 					if (isCollision(treeX, RE_treeX, dinoY, dinoHY))
 						break;
 
-					//z키가 눌렸고, 바닥이 아닐때 점프
-					if (GetKeyDown() == 'w' && isBottom)
+					if (GetKeyDown() == 'w' && isBottom) //w키가 눌렸고, 바닥이 아닐때 점프
 					{
 						isJumping = true;
 						isBottom = false;
 					}
-
-					//점프중이라면 Y를 감소, 점프가 끝났으면 Y를 증가.
-					if (isJumping)
+					if (isJumping)                       //점프중이라면 Y를 감소, 점프가 끝났으면 Y를 증가.
 					{
 						dinoY -= gravity;
 					}
 					else
 					{
 						dinoY += gravity;
-					}
-
-					//Y가 계속해서 증가하는걸 막기위해 바닥을 지정.
-					if (dinoY >= DINO_BOTTOM_Y)
+					}				
+					if (dinoY >= DINO_BOTTOM_Y)          //Y가 계속해서 증가하는걸 막기위해 바닥을 지정.
 					{
 						dinoY = DINO_BOTTOM_Y;
 						isBottom = true;
@@ -540,27 +514,25 @@ int main()
 						RE_treeX = RE_TREE_BOTTOM_X;
 					}
 
-
 					//점프의 맨위를 찍으면 점프가 끝난 상황.
 					if (dinoY <= 3)
 					{
 						isJumping = false;
 					}
 
-					if (GetKeyDown() == 's')
+					if (GetKeyDown() == 's') //draw dino
 					{
-						DownDrawDino(dinoY);		//draw dino
+						DownDrawDino(dinoY);	
 						dinoHY = 5;
 					}
-
-					else {
+					else {                  //draw dino
 						DrawDino(dinoY);
 						dinoHY = 0;
-					}//draw dino
-					if (0 <= treeX) {
-						DrawTree(treeX);		//draw Tree
 					}
-					if (0 <= RE_treeX && RE_treeX <= 45) {
+					if (0 <= treeX) {
+						DrawTree(treeX);                   //draw Tree
+					}
+					if (0 <= RE_treeX && RE_treeX <= 45) { //draw Tree
 						RE_DrawTree(RE_treeX);
 					}
 
@@ -582,7 +554,7 @@ int main()
 				//(v2.0) 게임 오버 메뉴
 				DrawGameOver(score, name, cpos);
 			}
-			else {
+			else { // 토끼선택
 				while (true)	//한 판에 대한 루프
 				{
 					//(v2.0) 충돌체크 트리의 x값과 공룡의 y값으로 판단
@@ -664,19 +636,27 @@ int main()
 			}
 		}
 	}
-	else if (POS == 1) {//랭킹
+	else if (POS == 1) { //랭킹
 		lank c[5];
 		FILE* fp = fopen("Lank.txt", "r");
 		for (int i = 0; i < 5; i++) {
 			fscanf(fp, "%d %s %s\n", &c[i].score, c[i].name, c[i].k);
 		}
 		fclose(fp);
-		printf("\n");
+		printf("\n\n");
+		printf("                                      =========== R A N K I N G ===========                                         ");
 		for (int i = 0; i < 5; i++) {
+			gotoxy(47, 4 + i);
 			printf("%d등 %d %s %s\n", i+1, c[i].score, c[i].name, c[i].k);
 		}
+		printf("\n\n\n\n\n\n\n\n\n");
+		system("pause");
 	}
-	else puts("게임종료를 눌렀습니다.");//게임종료
-
+	else {
+		printf("\n\n");
+		printf("                               =========== 게 임 종 료 를 눌 렀 습 니 다 ===========                                "); //게임종료
+		printf("\n\n\n\n\n\n\n\n\n");
+		system("pause");
+	}
 	return 0;
 }
