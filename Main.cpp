@@ -235,6 +235,21 @@ void SetConsoleView1()
 	gotoxy(75, 13); printf("3. 게임종료");
 	printf("\n\n\n");
 }
+int sel(int *cpos) {
+	cls;
+	int n;
+	printf("캐릭터를 선택하세요 (1->디노, 2->토끼) >> ");
+	scanf("%d", &n);
+	*cpos = n;
+	if (n == 1) {
+		printf("캐릭터:디노\n");
+		return *cpos;
+	}
+	else {
+		printf("캐릭터:토끼\n");
+		return *cpos;
+	}
+}
 
 void start() {
 	for (int n = 3; n >= 0; --n) {
@@ -303,10 +318,11 @@ void start() {
 	}
 }
 
-//
+
 
 int main()
 {
+	int cpos=1; // 캐릭터 선택
 	int POS = 0;	//0 - 게임시작, 1 - 랭킹, 2 - 게임 종료
 	SetConsoleView1();
 	while (true) {
@@ -346,10 +362,11 @@ int main()
 	}
 	cls;
 
-	//SetConsoleView();
+	
 	if (POS == 0) {//구글디노
 		while (true)		//(v2.0) 게임 루프
 		{
+			sel(&cpos);
 			//start();//게임시작대기
 
 			//게임 시작시 초기화
@@ -365,92 +382,96 @@ int main()
 			int score = 0;
 			clock_t start, curr;	//점수 변수 초기화
 			start = clock();		//시작시간 초기화
-
-			while (true)	//한 판에 대한 루프
-			{
-				//(v2.0) 충돌체크 트리의 x값과 공룡의 y값으로 판단
-				if (isCollision(treeX, RE_treeX, dinoY, dinoHY))
-					break;
-
-				//z키가 눌렸고, 바닥이 아닐때 점프
-				if (GetKeyDown() == 'w' && isBottom)
+			if (cpos == 1) {
+				while (true)	//한 판에 대한 루프
 				{
-					isJumping = true;
-					isBottom = false;
+					//(v2.0) 충돌체크 트리의 x값과 공룡의 y값으로 판단
+					if (isCollision(treeX, RE_treeX, dinoY, dinoHY))
+						break;
+
+					//z키가 눌렸고, 바닥이 아닐때 점프
+					if (GetKeyDown() == 'w' && isBottom)
+					{
+						isJumping = true;
+						isBottom = false;
+					}
+
+					//점프중이라면 Y를 감소, 점프가 끝났으면 Y를 증가.
+					if (isJumping)
+					{
+						dinoY -= gravity;
+					}
+					else
+					{
+						dinoY += gravity;
+					}
+
+					//Y가 계속해서 증가하는걸 막기위해 바닥을 지정.
+					if (dinoY >= DINO_BOTTOM_Y)
+					{
+						dinoY = DINO_BOTTOM_Y;
+						isBottom = true;
+					}
+
+					//나무가 왼쪽으로 (x음수) 가도록하고
+					//나무의 위치가 왼쪽 끝으로가면 다시 오른쪽 끝으로 소환.
+					treeX -= 2;
+					if (treeX <= -45)
+					{
+						treeX = TREE_BOTTOM_X;
+					}
+
+					RE_treeX -= 2;
+					if (RE_treeX <= 0)
+					{
+						RE_treeX = RE_TREE_BOTTOM_X;
+					}
+
+
+					//점프의 맨위를 찍으면 점프가 끝난 상황.
+					if (dinoY <= 3)
+					{
+						isJumping = false;
+					}
+
+					if (GetKeyDown() == 's')
+					{
+						DownDrawDino(dinoY);		//draw dino
+						dinoHY = 5;
+					}
+
+					else {
+						DrawDino(dinoY);
+						dinoHY = 0;
+					}//draw dino
+					if (0 <= treeX) {
+						DrawTree(treeX);		//draw Tree
+					}
+					if (0 <= RE_treeX && RE_treeX <= 45) {
+						RE_DrawTree(RE_treeX);
+					}
+
+					//(v2.0)
+					curr = clock();			//현재시간 받아오기
+					if (((curr - start) / CLOCKS_PER_SEC) >= 1)	// 1초가 넘었을
+					{
+						score++;	//스코어 UP
+						start = clock();	//시작시간 초기화
+					}
+					Sleep(60);
+					system("cls");	//clear
+
+					//(v2.0) 점수출력을 1초마다 해주는것이 아니라 항상 출력해주면서, 1초가 지났을때 ++ 해줍니다.
+					GotoXY(22, 0);	//커서를 가운데 위쪽으로 옮긴다. 콘솔창이 cols=100이니까 2*x이므로 22정도 넣어줌
+					printf("Score : %d ", score);	//점수 출력해줌.
 				}
 
-				//점프중이라면 Y를 감소, 점프가 끝났으면 Y를 증가.
-				if (isJumping)
-				{
-					dinoY -= gravity;
-				}
-				else
-				{
-					dinoY += gravity;
-				}
-
-				//Y가 계속해서 증가하는걸 막기위해 바닥을 지정.
-				if (dinoY >= DINO_BOTTOM_Y)
-				{
-					dinoY = DINO_BOTTOM_Y;
-					isBottom = true;
-				}
-
-				//나무가 왼쪽으로 (x음수) 가도록하고
-				//나무의 위치가 왼쪽 끝으로가면 다시 오른쪽 끝으로 소환.
-				treeX -= 2;
-				if (treeX <= -45)
-				{
-					treeX = TREE_BOTTOM_X;
-				}
-
-				RE_treeX -= 2;
-				if (RE_treeX <= 0)
-				{
-					RE_treeX = RE_TREE_BOTTOM_X;
-				}
-
-
-				//점프의 맨위를 찍으면 점프가 끝난 상황.
-				if (dinoY <= 3)
-				{
-					isJumping = false;
-				}
-
-				if (GetKeyDown() == 's')
-				{
-					DownDrawDino(dinoY);		//draw dino
-					dinoHY = 5;
-				}
-
-				else {
-					DrawDino(dinoY);
-					dinoHY = 0;
-				}//draw dino
-				if (0<= treeX) {
-					DrawTree(treeX);		//draw Tree
-				}
-				if (0 <= RE_treeX && RE_treeX <= 45){
-					RE_DrawTree(RE_treeX);
-				}
-
-				//(v2.0)
-				curr = clock();			//현재시간 받아오기
-				if (((curr - start) / CLOCKS_PER_SEC) >= 1)	// 1초가 넘었을
-				{
-					score++;	//스코어 UP
-					start = clock();	//시작시간 초기화
-				}
-				Sleep(60);
-				system("cls");	//clear
-
-				//(v2.0) 점수출력을 1초마다 해주는것이 아니라 항상 출력해주면서, 1초가 지났을때 ++ 해줍니다.
-				GotoXY(22, 0);	//커서를 가운데 위쪽으로 옮긴다. 콘솔창이 cols=100이니까 2*x이므로 22정도 넣어줌
-				printf("Score : %d ", score);	//점수 출력해줌.
+				//(v2.0) 게임 오버 메뉴
+				DrawGameOver(score);
 			}
-
-			//(v2.0) 게임 오버 메뉴
-			DrawGameOver(score);
+			else {
+					DrawGameOver(score);
+			}
 		}
 	}
 	else if (POS == 1) {//랭킹
