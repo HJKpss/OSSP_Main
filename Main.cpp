@@ -168,7 +168,7 @@ void DrawGameOver(const int score)
 }
 
 //(v2.0) 충돌했으면 true, 아니면 false
-bool isCollision(const int treeX, const int dinoY, const int dinoHY)
+bool isCollision(const int treeX,const int RE_treeX, const int dinoY, const int dinoHY)
 {
 	//트리의 X가 공룡의 몸체쪽에 있을때,
 	//공룡의 높이가 충분하지 않다면 충돌로 처리
@@ -176,6 +176,11 @@ bool isCollision(const int treeX, const int dinoY, const int dinoHY)
 	printf("treeX : %d, dinoY : %d dinoHY : %d", treeX, dinoY, dinoHY); //이런식으로 적절한 X, Y를 찾습니다.
 	if (treeX <= 8 && treeX >= 4 &&
 		dinoY > 8)
+	{
+		return true;
+	}
+	if (RE_treeX <= 8 && RE_treeX >= 4 &&
+		dinoHY < 5)
 	{
 		return true;
 	}
@@ -345,7 +350,7 @@ int main()
 	if (POS == 0) {//구글디노
 		while (true)		//(v2.0) 게임 루프
 		{
-			start();//게임시작대기
+			//start();//게임시작대기
 
 			//게임 시작시 초기화
 			bool isJumping = false;
@@ -364,7 +369,7 @@ int main()
 			while (true)	//한 판에 대한 루프
 			{
 				//(v2.0) 충돌체크 트리의 x값과 공룡의 y값으로 판단
-				if (isCollision(treeX, dinoY, dinoHY))
+				if (isCollision(treeX, RE_treeX, dinoY, dinoHY))
 					break;
 
 				//z키가 눌렸고, 바닥이 아닐때 점프
