@@ -4,6 +4,7 @@
 #include<conio.h>
 #include<time.h>
 #define DINO_BOTTOM_Y 12
+#define DINO_BOTTOM_HY 0
 #define TREE_BOTTOM_Y 20
 #define TREE_BOTTOM_X 45
 
@@ -73,29 +74,28 @@ void DrawDino(int dinoY)
 
 void DownDrawDino(int dinoY) { //s키를 눌렀을때
 	GotoXY(0, dinoY);
-	static bool legFlag = true;
-	printf("                               \n");
-	printf("                               \n");
-	printf("                               \n");
-	printf("                               \n");
-	printf("                               \n");
-	printf("                               \n");
-	printf("                      $$$$$$$  \n");
-	printf("    $                $$ $$$$$$$\n");
-	printf("    $$      $$$$$$   $$$$$$$$$$\n");
-	printf("     $$$   $$$$$$$$$$$$$$$$    \n");
-	printf("      $$$$$$$$$$$$$$$$$$$$$$$$$\n");
+	static bool legFlag = true;//높이 7
+	printf("                       \n");
+	printf("                       \n");
+	printf("                       \n");
+	printf("                       \n");
+	printf("                       \n");
+	printf("$               $$$$$$ \n");
+	printf("$$$  $$$$$$$$  $$ $$$$$\n");
+	printf(" $$$$$$$$$$$$$$$$$$$$$$\n");
+	printf("  $$$$$$$$$$$$$$$$$    \n");
+	printf("    $$$$$$$$$$$$$$$$$  \n");
+	printf("     $$$$$$    $       \n");
 	if (legFlag)
 	{
-		printf("       $$$ $$$$ $$$$ $$$$      \n");
-		printf("         $$$  $$$  $$$  $$$    \n");
+	printf("     $    $$$  $$      \n");
+	printf("     $$                  ");
 		legFlag = false;
 	}
 	else
 	{
-		printf("       $$ $$$$ $$$$ $$$$$      \n");
-		printf("        $$$  $$$  $$$  $$$     \n");
-
+	printf("     $$$  $    $$      \n");
+	printf("          $$             ");
 		legFlag = true;
 	}
 }
@@ -131,12 +131,12 @@ void DrawGameOver(const int score)
 }
 
 //(v2.0) 충돌했으면 true, 아니면 false
-bool isCollision(const int treeX, const int dinoY)
+bool isCollision(const int treeX, const int dinoY, const int dinoHY)
 {
 	//트리의 X가 공룡의 몸체쪽에 있을때,
 	//공룡의 높이가 충분하지 않다면 충돌로 처리
 	GotoXY(0, 0);
-	printf("treeX : %d, dinoY : %d", treeX, dinoY); //이런식으로 적절한 X, Y를 찾습니다.
+	printf("treeX : %d, dinoY : %d dinoHY : %d", treeX, dinoY, dinoHY); //이런식으로 적절한 X, Y를 찾습니다.
 	if (treeX <= 8 && treeX >= 4 &&
 		dinoY > 8)
 	{
@@ -265,6 +265,8 @@ void start() {
 
 int main()
 {
+	char c;
+
 	int POS = 0;	//0 - 게임시작, 1 - 랭킹, 2 - 게임 종료
 	SetConsoleView1();
 	while (true) {
@@ -316,6 +318,7 @@ int main()
 			const int gravity = 3;
 
 			int dinoY = DINO_BOTTOM_Y;
+			int dinoHY = DINO_BOTTOM_HY;
 			int treeX = TREE_BOTTOM_X;
 
 			int score = 0;
@@ -324,16 +327,22 @@ int main()
 
 			while (true)	//한 판에 대한 루프
 			{
+				//c = _getch();
+
 				//(v2.0) 충돌체크 트리의 x값과 공룡의 y값으로 판단
-				if (isCollision(treeX, dinoY))
+				if (isCollision(treeX, dinoY, dinoHY))
 					break;
 
 				//z키가 눌렸고, 바닥이 아닐때 점프
-				if (GetKeyDown() == 'z' && isBottom)
+				if (GetKeyDown() == 'w' && isBottom)
 				{
 					isJumping = true;
 					isBottom = false;
 				}
+
+				//if (c == 's') {
+				//	dinoY = 7;
+				//}
 
 				//점프중이라면 Y를 감소, 점프가 끝났으면 Y를 증가.
 				if (isJumping)
@@ -365,8 +374,18 @@ int main()
 				{
 					isJumping = false;
 				}
+				
+				if (GetKeyDown() == 's')
+				{
+					DownDrawDino(dinoY);		//draw dino
+					dinoHY = 5;
+				}
+				
+				else {
+					DrawDino(dinoY);
+					dinoHY = 0;
+				}//draw dino
 
-				DrawDino(dinoY);		//draw dino
 				DrawTree(treeX);		//draw Tree
 
 				//(v2.0)
