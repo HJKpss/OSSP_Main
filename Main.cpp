@@ -11,6 +11,8 @@
 #define RE_TREE_BOTTOM_HY 1
 #define RE_TREE_BOTTOM_X 90
 
+#define RABBIT_BOTTOM_Y 12
+
 #include <stralign.h>
 #include <stdlib.h>
 #define pause system("pause > nul")    //그냥 내가 많이 쓰는 커맨드를 줄여준 것이다.
@@ -57,7 +59,7 @@ void DrawDino(int dinoY)
 	printf("$$     $$$$$$$  \n");
 	printf("$$$   $$$$$     \n");
 	printf(" $$  $$$$$$$$$$ \n");
-	printf(" $$$$$$$$$$$  $ \n");
+	printf(" $$$$$$$$$$$    \n");
 	printf("  $$$$$$$$$$    \n");
 	printf("    $$$$$$$$    \n");
 	printf("     $$$$$$     \n");
@@ -99,6 +101,37 @@ void DownDrawDino(int dinoY) { //s키를 눌렀을때
 	{
 	printf("     $$$  $    $$      \n");
 	printf("          $$             ");
+		legFlag = true;
+	}
+}
+
+//토끼를 그리는 함수
+void DrawRabbit(int rabbitY)
+{
+	GotoXY(0, rabbitY);
+	static bool legFlag = true;
+	printf("             \n");
+	printf("             \n");
+	printf("             \n");
+	printf("             \n");
+	printf("         $ $ \n");
+	printf("         $ $ \n");
+	printf("        $$$$ \n");
+	printf("$ $$$$$$$$$$$\n");
+	printf(" $$$$$$$$$ $$\n");
+	printf(" $$$$$$$$$$$$\n");
+	//printf("  $$   $$    \n");
+	//printf("   $$$  $$   \n");
+	if (legFlag)
+	{
+	printf("  $$   $$    \n");
+	printf("   $$$         ");
+		legFlag = false;
+	}
+	else
+	{
+	printf("  $$   $$    \n");
+	printf("        $$     ");
 		legFlag = true;
 	}
 }
@@ -181,6 +214,20 @@ bool isCollision(const int treeX,const int RE_treeX, const int dinoY, const int 
 	}
 	if (RE_treeX <= 8 && RE_treeX >= 4 &&
 		dinoHY < 5)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool isCollision1(const int treeX, const int rabbitY)
+{
+	//트리의 X가 공룡의 몸체쪽에 있을때,
+	//공룡의 높이가 충분하지 않다면 충돌로 처리
+	GotoXY(0, 0);
+	printf("treeX : %d, rabbitY : %d", treeX, rabbitY); //이런식으로 적절한 X, Y를 찾습니다.
+	if (treeX <= 8 && treeX >= 4 &&
+		rabbitY > 8)
 	{
 		return true;
 	}
@@ -378,6 +425,7 @@ int main()
 			int dinoHY = DINO_BOTTOM_HY;
 			int treeX = TREE_BOTTOM_X;
 			int RE_treeX = RE_TREE_BOTTOM_X;
+			int rabbitY = RABBIT_BOTTOM_Y;
 
 			int score = 0;
 			clock_t start, curr;	//점수 변수 초기화
@@ -470,7 +518,84 @@ int main()
 				DrawGameOver(score);
 			}
 			else {
-					DrawGameOver(score);
+				while (true)	//한 판에 대한 루프
+				{
+					//(v2.0) 충돌체크 트리의 x값과 공룡의 y값으로 판단
+					const int gravity1 = 4.5;
+					if (isCollision1(treeX, rabbitY))
+						break;
+
+					//z키가 눌렸고, 바닥이 아닐때 점프
+					if (GetKeyDown() == 'w' && isBottom)
+					{
+						isJumping = true;
+						isBottom = false;
+					}
+
+					//점프중이라면 Y를 감소, 점프가 끝났으면 Y를 증가.
+					if (isJumping)
+					{
+						rabbitY -= gravity1;
+					}
+					else
+					{
+						rabbitY += gravity1;
+					}
+
+					//Y가 계속해서 증가하는걸 막기위해 바닥을 지정.
+					if (rabbitY >= RABBIT_BOTTOM_Y)
+					{
+						rabbitY = RABBIT_BOTTOM_Y;
+						isBottom = true;
+					}
+
+					//나무가 왼쪽으로 (x음수) 가도록하고
+					//나무의 위치가 왼쪽 끝으로가면 다시 오른쪽 끝으로 소환.
+					treeX -= 2;
+					if (treeX <= -45)
+					{
+						treeX = TREE_BOTTOM_X;
+					}
+
+					RE_treeX -= 2;
+					if (RE_treeX <= 0)
+					{
+						RE_treeX = RE_TREE_BOTTOM_X;
+					}
+
+					//점프의 맨위를 찍으면 점프가 끝난 상황.
+					if (rabbitY <= 3)
+					{
+						isJumping = false;
+					}
+
+					DrawRabbit(rabbitY);
+					
+
+					if (0 <= treeX) {
+						DrawTree(treeX);		//draw Tree
+					}
+					if (0 <= RE_treeX && RE_treeX <= 45) {
+						RE_DrawTree(RE_treeX);
+					}
+
+					//(v2.0)
+					curr = clock();			//현재시간 받아오기
+					if (((curr - start) / CLOCKS_PER_SEC) >= 1)	// 1초가 넘었을
+					{
+						score++;	//스코어 UP
+						start = clock();	//시작시간 초기화
+					}
+					Sleep(60);
+					system("cls");	//clear
+
+					//(v2.0) 점수출력을 1초마다 해주는것이 아니라 항상 출력해주면서, 1초가 지났을때 ++ 해줍니다.
+					GotoXY(22, 0);	//커서를 가운데 위쪽으로 옮긴다. 콘솔창이 cols=100이니까 2*x이므로 22정도 넣어줌
+					printf("Score : %d ", score);	//점수 출력해줌.
+				}
+
+				//(v2.0) 게임 오버 메뉴
+				DrawGameOver(score);
 			}
 		}
 	}
