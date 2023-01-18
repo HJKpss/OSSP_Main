@@ -197,48 +197,46 @@ void sort(lank* a, lank* b) {
 }
 
 void bub(lank *b) {
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 3; j++) {
+	for (int i = 0; i < 6; i++) {
+		for (int j = 0; j < 5; j++) {
 			if (b[j].score < b[j + 1].score) {
 				sort(&b[j], &b[j + 1]);
 			}
 		}
 	}
 }
+void file2(lank *b) {
+	FILE* fp = fopen("Lank.txt", "w");
+		for (int i = 0; i < 5; i++) {
+		fprintf(fp, "%d %s %s\n", b[i].score, b[i].name, b[i].k);
+	}
+	fclose(fp);
+}
 
 void file(lank s){
 	if (s.cpos == 1) strcpy(s.k, "디노");
 	else strcpy(s.k, "토끼");
 
-	lank a[3];
-	lank b[4];
+	lank a[5];
+	lank b[6];
 	FILE* fp = fopen("Lank.txt", "r");
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 5; i++) {
 		fscanf(fp, "%d %s %s\n", &a[i].score, a[i].name, a[i].k);
 	}
 	fclose(fp);
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 5; i++) {
 		b[i].score = a[i].score;
 		strcpy(b[i].name ,a[i].name);
 		strcpy(b[i].k, a[i].k);
 	}
-	b[3].score = s.score;
-	strcpy(b[3].name, s.name);
-	strcpy(b[3].k, s.k);
+	b[5].score = s.score;
+	strcpy(b[5].name, s.name);
+	strcpy(b[5].k, s.k);
 	bub(b);
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 6; i++) {
 		printf("%d %s %s\n", b[i].score, b[i].name, b[i].k);
-	}
-	
-
-	//FILE* fp = fopen("Lank.txt", "w");
-	//if (s.cpos == 1) {
-	//	fprintf(fp, "점수: %d 닉네임: %s 캐릭터: 디노", s.score, s.name);
-	//}
-	//else{
-	//	fprintf(fp, "점수: %d 닉네임: %s 캐릭터: 토끼", s.score, s.name);
-	//}
-	//fclose(fp);
+	}	
+	file2(b);
 }
 
 //(v2.0) 충돌 했을때 게임오버 그려줌
