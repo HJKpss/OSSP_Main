@@ -8,6 +8,9 @@
 #define TREE_BOTTOM_Y 20
 #define TREE_BOTTOM_X 45
 
+#define RE_TREE_BOTTOM_HY 1
+#define RE_TREE_BOTTOM_X 90
+
 #include <stralign.h>
 #include <stdlib.h>
 #define pause system("pause > nul")    //그냥 내가 많이 쓰는 커맨드를 줄여준 것이다.
@@ -54,7 +57,7 @@ void DrawDino(int dinoY)
 	printf("$$     $$$$$$$  \n");
 	printf("$$$   $$$$$     \n");
 	printf(" $$  $$$$$$$$$$ \n");
-	printf(" $$$$$$$$$$$    \n");
+	printf(" $$$$$$$$$$$  $ \n");
 	printf("  $$$$$$$$$$    \n");
 	printf("    $$$$$$$$    \n");
 	printf("     $$$$$$     \n");
@@ -114,6 +117,40 @@ void DrawTree(int treeX)
 	GotoXY(treeX, TREE_BOTTOM_Y + 4);
 	printf(" $$ ");
 }
+
+//나무를 그리는 함수
+void RE_DrawTree(int treeX)
+{
+	GotoXY(treeX, RE_TREE_BOTTOM_HY);
+	printf(" $$ ");
+	GotoXY(treeX, RE_TREE_BOTTOM_HY + 1);
+	printf(" $$ ");
+	GotoXY(treeX, RE_TREE_BOTTOM_HY + 2);
+	printf(" $$ ");
+	GotoXY(treeX, RE_TREE_BOTTOM_HY + 3);
+	printf(" $$ ");
+	GotoXY(treeX, RE_TREE_BOTTOM_HY + 4);
+	printf(" $$ ");
+	GotoXY(treeX, RE_TREE_BOTTOM_HY + 5);
+	printf(" $$ ");
+	GotoXY(treeX, RE_TREE_BOTTOM_HY + 6);
+	printf(" $$ ");
+	GotoXY(treeX, RE_TREE_BOTTOM_HY + 7);
+	printf(" $$ ");
+	GotoXY(treeX, RE_TREE_BOTTOM_HY + 8);
+	printf(" $$ ");
+	GotoXY(treeX, RE_TREE_BOTTOM_HY + 9);
+	printf(" $$ ");
+	GotoXY(treeX, RE_TREE_BOTTOM_HY + 10);
+	printf(" $$ ");
+	GotoXY(treeX, RE_TREE_BOTTOM_HY + 11);
+	printf(" $$ ");
+	GotoXY(treeX, RE_TREE_BOTTOM_HY + 12);
+	printf(" $$ ");
+	GotoXY(treeX, RE_TREE_BOTTOM_HY + 13);
+	printf("$$$$");
+}
+
 
 //(v2.0) 충돌 했을때 게임오버 그려줌
 void DrawGameOver(const int score)
@@ -265,8 +302,6 @@ void start() {
 
 int main()
 {
-	char c;
-
 	int POS = 0;	//0 - 게임시작, 1 - 랭킹, 2 - 게임 종료
 	SetConsoleView1();
 	while (true) {
@@ -320,6 +355,7 @@ int main()
 			int dinoY = DINO_BOTTOM_Y;
 			int dinoHY = DINO_BOTTOM_HY;
 			int treeX = TREE_BOTTOM_X;
+			int RE_treeX = RE_TREE_BOTTOM_X;
 
 			int score = 0;
 			clock_t start, curr;	//점수 변수 초기화
@@ -327,8 +363,6 @@ int main()
 
 			while (true)	//한 판에 대한 루프
 			{
-				//c = _getch();
-
 				//(v2.0) 충돌체크 트리의 x값과 공룡의 y값으로 판단
 				if (isCollision(treeX, dinoY, dinoHY))
 					break;
@@ -339,10 +373,6 @@ int main()
 					isJumping = true;
 					isBottom = false;
 				}
-
-				//if (c == 's') {
-				//	dinoY = 7;
-				//}
 
 				//점프중이라면 Y를 감소, 점프가 끝났으면 Y를 증가.
 				if (isJumping)
@@ -364,29 +394,40 @@ int main()
 				//나무가 왼쪽으로 (x음수) 가도록하고
 				//나무의 위치가 왼쪽 끝으로가면 다시 오른쪽 끝으로 소환.
 				treeX -= 2;
-				if (treeX <= 0)
+				if (treeX <= -45)
 				{
 					treeX = TREE_BOTTOM_X;
 				}
+
+				RE_treeX -= 2;
+				if (RE_treeX <= 0)
+				{
+					RE_treeX = RE_TREE_BOTTOM_X;
+				}
+
 
 				//점프의 맨위를 찍으면 점프가 끝난 상황.
 				if (dinoY <= 3)
 				{
 					isJumping = false;
 				}
-				
+
 				if (GetKeyDown() == 's')
 				{
 					DownDrawDino(dinoY);		//draw dino
 					dinoHY = 5;
 				}
-				
+
 				else {
 					DrawDino(dinoY);
 					dinoHY = 0;
 				}//draw dino
-
-				DrawTree(treeX);		//draw Tree
+				if (0<= treeX) {
+					DrawTree(treeX);		//draw Tree
+				}
+				if (0 <= RE_treeX && RE_treeX <= 45){
+					RE_DrawTree(RE_treeX);
+				}
 
 				//(v2.0)
 				curr = clock();			//현재시간 받아오기
